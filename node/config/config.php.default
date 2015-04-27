@@ -1,0 +1,30 @@
+<?php
+$config = array(
+	'debug'=>true,
+	'coin'=>'ltc',
+	'cointype'=>'btc',
+	'asset'=>'12345',
+	'mainnode'=>'http://hzx.localhost/mainnode/public',
+	'url'=>'http://rpcltc:pwd@127.0.0.1:8262',
+	'hz'=>'http://127.0.0.1:7776/nhz',
+	// btc:
+	// 'redeemScript'=>'longstring',
+	// bts:
+	// 'feesave'=>'',
+	// btc, bts:
+	// 'address'=>'',
+	// nxt:
+	//'snippets'=>array(
+	//	1=>'',
+	//	3=>''
+	//)
+);
+
+/* misc settings, do not edit */
+date_default_timezone_set('UTC');
+
+if($config['debug'])
+{
+	ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+}

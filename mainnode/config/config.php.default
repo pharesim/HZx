@@ -1,0 +1,59 @@
+<?php
+$config = array(
+	'debug'=>true,
+	'database'=>'/home/user/workspace/HZx/mainnode/data/hzx.db',
+	'coins'=>array( // uncomment assetId to activate
+		'btc'=>array(
+			'cointype'=>'btc',
+            'feeinalias'=>'hzxbtcdepositfee',
+            'feeoutalias'=>'hzxbtcwithdrawalfee',
+            'minfeealias'=>'hzxbtcminfee',
+            'minconfirmationsalias'=>'hzxbtcminconfirmations',
+            'feeperkb'=>0.0001,
+            'url'=>'http://bitcoinrpc:rpcpwd@127.0.0.1:8261',
+            'wallet_account'=>'deposit',
+#            'assetId'=>'5695508852370099719',
+            'assetPassphrase'=>''
+  		),
+		'bts'=>array(
+            'cointype'=>'bts',
+            'feeinalias'=>'hzxbtsdepositfee',
+            'feeoutalias'=>'hzxbtswithdrawalfee',
+            'minfeealias'=>'hzxbtsminfee',
+            'minconfirmationsalias'=>'hzxbtsminconfirmations',
+            'feeperkb'=>0,
+            'url'=>'http://bts:pwd@127.0.0.1:8260',
+            'wallet_account'=>'',
+ #           'assetId'=>'15363696555198579003',
+            'assetPassphrase'=>'',
+            'multisigacc'=>'uniquemultisigaccount'
+        ),
+		'nxt'=>array(
+            'cointype'=>'nxt',
+            'feeinalias'=>'hzxnxtdepositfee',
+            'feeoutalias'=>'hzxnxtwithdrawalfee',
+            'minfeealias'=>'hzxnxtminfee',
+            'minconfirmationsalias'=>'hzxnxtminconfirmations',
+            'wallet_account'=>'',
+            'wallet_account_passphrase'=>'',
+            'url'=>'http://127.0.0.1:7876/nxt',
+#            'assetId'=>'7635404150699827277',
+            'assetPassphrase'=>''
+   		 )
+
+	),
+	'nhz'=>array(
+		'url'=>'http://127.0.0.1:6976/nhz',
+		'confirmations'=>2
+	),
+	'dbcachesize'=>131072
+);
+
+/* misc settings, do not edit */
+date_default_timezone_set('UTC');
+
+if($config['debug'])
+{
+	ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+}

@@ -1,0 +1,48 @@
+CREATE TABLE last_check (
+coin TEXT,
+timestamp_nhz NUMERIC,
+timestamp_coin NUMERIC,
+UNIQUE (coin));
+
+INSERT INTO last_check (coin,timestamp_nhz,timestamp_coin) VALUES ('btc',33187179,0);
+INSERT INTO last_check (coin,timestamp_nhz,timestamp_coin) VALUES ('drk',33187179,0);
+INSERT INTO last_check (coin,timestamp_nhz,timestamp_coin) VALUES ('ltc',33187179,0);
+INSERT INTO last_check (coin,timestamp_nhz,timestamp_coin) VALUES ('nxt',33187179,0);
+INSERT INTO last_check (coin,timestamp_nhz,timestamp_coin) VALUES ('bts',33187179,0);
+
+CREATE TABLE deposit_addresses (
+id TEXT,
+nhz TEXT,
+address TEXT,
+coin TEXT,
+passphrase TEXT,
+UNIQUE (id));
+
+CREATE TABLE deposits (
+txid TEXT,
+coin TEXT,
+valid BOOLEAN,
+account TEXT,
+processed BOOLEAN,
+sendid TEXT,
+send_time NUMERIC,
+UNIQUE (txid)
+);
+
+CREATE TABLE withdrawals(
+id TEXT,
+coin TEXT,
+message TEXT,
+valid BOOLEAN,
+processed BOOLEAN,
+sendid TEXT,
+UNIQUE (id)
+);
+
+CREATE TABLE multisig_ins(
+id TEXT,
+coin TEXT,
+amount NUMERIC,
+withdrawn BOOLEAN,
+UNIQUE (id)
+);
