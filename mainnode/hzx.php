@@ -5,28 +5,28 @@ class Mainnode
 	// asset data from hz blockchain
 	protected $asset  = null;
 
-    // coin class
+	// coin class
 	protected $coin     = null;
 
-    // config settings
+	// config settings
 	protected $config   = null;
 
-    // database connection
+	// database connection
 	protected $conn     = null;
 
-    // last check coin timestamp
+	// last check coin timestamp
 	protected $lastcoin = null;
 
-    // last check hz timestamp
+	// last check hz timestamp
 	protected $lastnhz  = null;
 
-    // hz class
+	// hz class
 	protected $nhz      = null;
 
-    // current coin timestamp
+	// current coin timestamp
 	protected $nowcoin  = null;
 
-    // current hz timestamp
+	// current hz timestamp
 	protected $nownhz   = null;
 
 
