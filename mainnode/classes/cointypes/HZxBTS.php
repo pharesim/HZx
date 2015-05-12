@@ -58,13 +58,16 @@ class HZxBTS extends btsRPCClient
 					$proceed = false;
 					foreach($transaction['ledger_entries'] as $entry)
 					{
-						$recipient = $this->getaccountaddress(
-							$transaction['ledger_entries'][0]['to_account']
-						);
-						if($recipient == $this->getaccountaddress($account))
+						if(!in_array(trim($entry['to_account']),array('','unknown','UNKNOWN')))
 						{
-							$proceed = true;
-							break;
+							$recipient = $this->getaccountaddress(
+								$entry['to_account']
+							);
+							if($recipient == $this->getaccountaddress($account))
+							{
+								$proceed = true;
+								break;
+							}
 						}
 					}
 

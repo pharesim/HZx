@@ -746,4 +746,4 @@ class Mainnode
 require_once ('./config/config.php');
 
 $app = new Mainnode();
-echo $app->run()."\n";
+$app->run()."\n";
