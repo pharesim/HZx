@@ -148,7 +148,6 @@ class PairNodeMain
 
 			$multisig = $coin->addmultisigaddress(2,$keys,'multisigaddress');
 			$address  = $coin->validateaddress($multisig);
-			$multisig = $coin->createmultisig(2,$keys);
 			$this->write .= $multisig.'::|::'.$address['hex']."\n";
 		}
 

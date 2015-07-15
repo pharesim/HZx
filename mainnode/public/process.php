@@ -123,6 +123,11 @@ class ProcessWithdrawal
 
 		if(isset($this->request['sendid']))
 		{
+			file_put_contents(
+				'../data/withdrawlog',
+				date('d.m. H:i:s').': '.$_SERVER['REMOTE_ADDR'].' signed and sent '.$this->request['coin'].' '.$this->request['sendid']."\n",
+				FILE_APPEND
+			);
 			$tx = $this->request['sendid'];
 			$this->conn->update(
 				'withdrawals',
@@ -143,6 +148,11 @@ class ProcessWithdrawal
 			$tx = $this->coin->sendrawtransaction($this->request['hex']);
 			if(!array($tx))
 			{
+				file_put_contents(
+					'../data/withdrawlog',
+					date('d.m. H:i:s').' ('.$this->request['coin'].'): '.$_SERVER['REMOTE_ADDR'].' signed completely. Tx sent: '.$tx."\n",
+				FILE_APPEND
+				);
 				$this->conn->update(
 					'withdrawals',
 					array(
@@ -155,11 +165,22 @@ class ProcessWithdrawal
 				);
 
 				$this->saveMultisigIns($this->request['hex']);
+			} else {
+				file_put_contents(
+					'../data/withdrawlog',
+					date('d.m. H:i:s').' ('.$this->request['coin'].'): '.$_SERVER['REMOTE_ADDR'].' replied, but tx could not be sent ('.$this->request['hex'].')'."\n",
+				FILE_APPEND
+				);
 			}
 		}
 
-		else
+		elseif(!empty($this->request['hex']))
 		{
+			file_put_contents(
+				'../data/withdrawlog',
+				date('d.m. H:i:s').' ('.$this->request['coin'].'): '.$_SERVER['REMOTE_ADDR'].' answered with '.$this->request['hex']."\n",
+				FILE_APPEND
+			);
 			$this->conn->update(
 				'withdrawals',
 				array(
@@ -169,6 +190,15 @@ class ProcessWithdrawal
 				array(
 					'id'=>$this->request['id']
 				)
+			);
+		}
+
+		else
+		{
+			file_put_contents(
+				'../data/withdrawlog',
+				date('d.m. H:i:s').' ('.$this->request['coin'].'): '.$_SERVER['REMOTE_ADDR'].' sent an empty reply'."\n",
+				FILE_APPEND
 			);
 		}
 	}

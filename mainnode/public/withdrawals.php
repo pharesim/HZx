@@ -148,6 +148,19 @@ class Withdrawals
 			$this->sqlEscape($this->request['coin'])."' AND processed=0;"
 		);
 
+		file_put_contents(
+			'../data/withdrawlog',
+			date('d.m. H:i:s').': '.$_SERVER['REMOTE_ADDR'].' asked for '.$this->request['coin'].' withdrawals'."\n",
+			FILE_APPEND
+		);
+		if(count($withdrawals) > 0) {
+			file_put_contents(
+				'../data/withdrawlog',
+				date('d.m. H:i:s').': '.$_SERVER['REMOTE_ADDR'].' received '.count($withdrawals).' '.$this->request['coin'].' transaction(s) to sign'."\n",
+				FILE_APPEND
+			);
+		}
+
 		print_r(json_encode($withdrawals));
 	}
 }

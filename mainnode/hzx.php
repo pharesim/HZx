@@ -679,7 +679,7 @@ class Mainnode
 						'aliasName'=>$this->coin->config['minfeealias']
 					)
 				)->aliasURI;
-				$fee = $amount*($fee/100);
+				$fee = round($amount*($fee/100),8);
 				if($fee < $minfee)
 				{
 					$fee = $minfee;

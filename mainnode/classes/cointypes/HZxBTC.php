@@ -168,13 +168,10 @@ class HZxBTC extends jsonRPCClient
 		);
 		$useTx = array();
 		$totalout = 0;
+		$withdrawing = array();
 		foreach($transactions as $tx)
 		{
-			$this->conn->update(
-				'multisig_ins',
-				array('withdrawn'=>1),
-				array('id'=>$tx['id'])
-			);
+			$withdrawing[] = $tx['id'];
 
 			$vouts = $this->decoderawtransaction(
 				$this->getrawtransaction($tx['id'])
@@ -183,12 +180,14 @@ class HZxBTC extends jsonRPCClient
 			{
 				if($vout['scriptPubKey']['addresses'][0] == $this->storage)
 				{
-					$useTx[] = array(
+					$tmp = array(
 						'txid'=>$vouts['txid'],
 						'vout'=>$key,
 						'redeemScript'=>$this->getRedeemScript(),
 						'scriptPubKey'=>$vout['scriptPubKey']['hex']
 					);
+
+					$useTx[] = $tmp;
 					$totalout += $vout['value'];
 				}
 			}
@@ -215,12 +214,28 @@ class HZxBTC extends jsonRPCClient
 				$fee = round($kbytes*$this->config['feeperkb'],8);
 				$recipients[$feesave] -= $fee;
 				$raw = $this->createrawtransaction($useTx, $recipients);
-				$multisigaddress = $this->getaccountaddress('multisignode0');
-				$signed = $this->signrawtransaction(
-					$raw,
-					$useTx,
-					array($this->dumpprivkey($multisigaddress))
-				)['hex'];
+				if(isset($config['oldmultisig']) && $config['oldmultisig'] == true) {
+					$signed = $this->signrawtransaction(
+						$raw,
+						$useTx
+					)['hex'];
+				} else {
+					$multisigaddress = $this->getaccountaddress('multisignode0');
+					$signed = $this->signrawtransaction(
+						$raw,
+						$useTx,
+						array($this->dumpprivkey($multisigaddress))
+					)['hex'];
+				}
+
+				foreach($withdrawing as $val)
+				{
+					$this->conn->update(
+						'multisig_ins',
+						array('withdrawn'=>1),
+						array('id'=>$val)
+					);
+				}
 
 				return $this->conn->update(
 					'withdrawals',

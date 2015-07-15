@@ -13,7 +13,8 @@ $config = array(
             'url'=>'http://bitcoinrpc:rpcpwd@127.0.0.1:8261',
             'wallet_account'=>'deposit',
 #            'assetId'=>'5695508852370099719',
-            'assetPassphrase'=>''
+            'assetPassphrase'=>'',
+            // 'oldmultisig'=>true uncomment for block
   		),
 		'bts'=>array(
             'cointype'=>'bts',

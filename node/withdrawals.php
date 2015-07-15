@@ -103,8 +103,10 @@ class Withdrawals
 	{
 		foreach($results as $withdrawal)
 		{
-			if(!empty($withdrawal->sendid))
+			if(empty($withdrawal->sendid))
 			{
+				$this->debug('Transaction data empty');
+			} else {
 				require_once ('../libs/bitcoin/jsonRPCClient.php');
 				$coin = new jsonRPCClient($this->config['url']);
 				$tx = $coin->decoderawtransaction($withdrawal->sendid);
@@ -116,6 +118,7 @@ class Withdrawals
 				$transaction = $this->nhz->getTransaction(array('transaction'=>$withdrawal->id));
 				if($transaction->attachment->asset == $this->config['asset'] && count($tx['vout']) <= 3)
 				{
+					$this->debug('asset is valid');
 					$sum = 0;
 					$recipient = $this->nhz->readMessage($transaction);
 					if(!$recipient)
@@ -143,6 +146,7 @@ class Withdrawals
 							if($key == $recipient)
 							{
 								$process = true;
+								$this->debug('recipient found');
 								break;
 							}
 						}
@@ -152,6 +156,7 @@ class Withdrawals
 
 					$decimals = $this->nhz->getAsset(array('asset'=>$this->config['asset']))->decimals;
 					$qty = $transaction->attachment->quantityQNT / pow(10,$decimals);
+					$this->debug('sum: '.$sum.' qty: '.$qty);
 					if($process && $sum <= $qty)
 					{
 						$in = array();
@@ -169,13 +174,23 @@ class Withdrawals
 							);
 						}
 
-						$multisigaddress = $coin->getaccountaddress('multisignode1');
-						$signed = $coin->signrawtransaction(
-							$withdrawal->sendid,
-							$in,
-							array($coin->dumpprivkey($multisigaddress))
-						);
-						if($signed['hex'] != $withdrawal->sendid)
+						if(isset($this->config['oldmultisig']) && $config['oldmultisig'] == true)
+						{
+							$signed = $coin->signrawtransaction(
+								$withdrawal->sendid,
+								$in
+							);
+						} else {
+							$multisigaddress = $coin->getaccountaddress('multisignode1');
+							$signed = $coin->signrawtransaction(
+								$withdrawal->sendid,
+								$in,
+								array($coin->dumpprivkey($multisigaddress))
+							);
+						}
+
+						$this->debug('signed: '.$signed['hex']);
+						if($signed['hex'] != $withdrawal->sendid || $signed['complete'] == 1)
 						{
 							$signed['coin'] = $this->config['coin'];
 							$signed['id'] = $withdrawal->id;
