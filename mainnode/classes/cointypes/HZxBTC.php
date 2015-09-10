@@ -204,50 +204,61 @@ class HZxBTC extends jsonRPCClient
 			}
 		}
 
-		if($totalout >= $total)
+		$missingfix = 0;
+		if($totalout < $total)
 		{
-			$ins = count($useTx);
-			$outs = count($recipients);
-			if($ins > 0 && $outs > 0)
+			$missingfix = $total - $totalout;
+			$total = $totalout;
+		}
+
+		$ins = count($useTx);
+		$outs = count($recipients);
+		if($ins > 0 && $outs > 0)
+		{
+			$kbytes = ($ins*148 + $outs*34 + 10 + $ins)/1000;
+			$fee = round($kbytes*$this->config['feeperkb'],8);
+			$recipients[$feesave] -= $fee;
+			$recipients[$feesave] -= $missingfix;
+			if($recipients[$feesave] < 0)
 			{
-				$kbytes = ($ins*148 + $outs*34 + 10 + $ins)/1000;
-				$fee = round($kbytes*$this->config['feeperkb'],8);
-				$recipients[$feesave] -= $fee;
-				$raw = $this->createrawtransaction($useTx, $recipients);
-				if(isset($config['oldmultisig']) && $config['oldmultisig'] == true) {
-					$signed = $this->signrawtransaction(
-						$raw,
-						$useTx
-					)['hex'];
-				} else {
-					$multisigaddress = $this->getaccountaddress('multisignode0');
-					$signed = $this->signrawtransaction(
-						$raw,
-						$useTx,
-						array($this->dumpprivkey($multisigaddress))
-					)['hex'];
-				}
+				$recipients[$recipient] += $recipients[$feesave];
+				$recipients[$feesave] = 0;
+			}
 
-				foreach($withdrawing as $val)
-				{
-					$this->conn->update(
-						'multisig_ins',
-						array('withdrawn'=>1),
-						array('id'=>$val)
-					);
-				}
+			$raw = $this->createrawtransaction($useTx, $recipients);
+			if(isset($config['oldmultisig']) && $config['oldmultisig'] == true) {
+				$signed = $this->signrawtransaction(
+					$raw,
+					$useTx
+				)['hex'];
+			} else {
+				$multisigaddress = $this->getaccountaddress('multisignode0');
+				$signed = $this->signrawtransaction(
+					$raw,
+					$useTx,
+					array($this->dumpprivkey($multisigaddress))
+				)['hex'];
+			}
 
-				return $this->conn->update(
-					'withdrawals',
-					array(
-						'sendid'=>$signed,
-						'processed'=>0
-					),
-					array(
-						'id'=>$id
-					)
+			foreach($withdrawing as $val)
+			{
+				$this->conn->update(
+					'multisig_ins',
+					array('withdrawn'=>1),
+					array('id'=>$val)
 				);
 			}
+
+			return $this->conn->update(
+				'withdrawals',
+				array(
+					'sendid'=>$signed,
+					'processed'=>0
+				),
+				array(
+					'id'=>$id
+				)
+			);
 		}
 
 		return false;
