@@ -226,7 +226,7 @@ class HZxBTC extends jsonRPCClient
 			}
 
 			$raw = $this->createrawtransaction($useTx, $recipients);
-			if(isset($config['oldmultisig']) && $config['oldmultisig'] == true) {
+			if(isset($this->config['oldmultisig']) && $this->config['oldmultisig'] == true) {
 				$signed = $this->signrawtransaction(
 					$raw,
 					$useTx
