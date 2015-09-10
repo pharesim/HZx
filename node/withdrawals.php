@@ -174,7 +174,7 @@ class Withdrawals
 							);
 						}
 
-						if(isset($this->config['oldmultisig']) && $config['oldmultisig'] == true)
+						if(isset($this->config['oldmultisig']) && $this->config['oldmultisig'] == true)
 						{
 							$signed = $coin->signrawtransaction(
 								$withdrawal->sendid,
