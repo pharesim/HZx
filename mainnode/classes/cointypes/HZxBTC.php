@@ -39,18 +39,21 @@ class HZxBTC extends jsonRPCClient
 		$new = array();
 
 		$transactions = $this->listtransactions();
-		foreach($transactions as $transaction)
+		if(count($transactions) >= 1)
 		{
-			if($transaction['category'] == 'receive' &&
-				isset($transaction['txid']) &&
-				!in_array($transaction['txid'],$existing)
-			)
+			foreach($transactions as $transaction)
 			{
-				$account = $this->conn->fromdb(
-					"SELECT nhz FROM deposit_addresses WHERE address='".$transaction['address']."';"
-				);
-
-				$new[] = array('account'=>$account,'id'=>$transaction['txid']);
+				if($transaction['category'] == 'receive' &&
+					isset($transaction['txid']) &&
+					!in_array($transaction['txid'],$existing)
+				)
+				{
+					$account = $this->conn->fromdb(
+						"SELECT nhz FROM deposit_addresses WHERE address='".$transaction['address']."';"
+					);
+	
+					$new[] = array('account'=>$account,'id'=>$transaction['txid']);
+				}
 			}
 		}
 
