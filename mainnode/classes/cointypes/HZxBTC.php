@@ -98,19 +98,14 @@ class HZxBTC extends jsonRPCClient
 			if($amount > 0)
 			{
 				$qnt = round($amount,$this->asset->decimals)*pow(10,$this->asset->decimals);
-				$send = $this->hz->transferAsset(
-					$this->config['assetId'],
-					$qnt,
-					$transaction['account'],
-					$this->config['assetPassphrase']
-				);
-				if(isset($send->transaction))
-				{
-					$store = $this->sendtoaddress(
-						$this->storage,
-						$amount
-					);
 
+				$store = $this->sendtoaddress(
+					$this->storage,
+					$amount
+				);
+
+				if(!empty($store))
+				{
 					$this->conn->save(
 						'multisig_ins',
 						array(
@@ -120,17 +115,26 @@ class HZxBTC extends jsonRPCClient
 						)
 					);
 
-					return $this->conn->update(
-						'deposits',
-						array(
-							'sendid'=>$send->transaction,
-							'processed'=>1,
-							'send_time'=>$send->transactionJSON->timestamp
-						),
-						array(
-							'txid'=>$transaction['txid']
-						)
+					$send = $this->hz->transferAsset(
+						$this->config['assetId'],
+						$qnt,
+						$transaction['account'],
+						$this->config['assetPassphrase']
 					);
+					if(isset($send->transaction))
+					{
+						return $this->conn->update(
+							'deposits',
+							array(
+								'sendid'=>$send->transaction,
+								'processed'=>1,
+								'send_time'=>$send->transactionJSON->timestamp
+							),
+							array(
+								'txid'=>$transaction['txid']
+							)
+						);
+					}
 				}
 			}
 		}
