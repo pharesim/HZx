@@ -146,9 +146,17 @@ class PairNodeMain
 				$keys[] = $value[0];
 			}
 
-			$multisig = $coin->addmultisigaddress(2,$keys,'multisigaddress');
-			$address  = $coin->validateaddress($multisig);
-			$this->write .= $multisig.'::|::'.$address['hex']."\n";
+			if(isset($this->config['coins'][$this->request['coin']]['oldmultisig']) && $this->config['coins'][$this->request['coin']]['oldmultisig'] == true)
+			{
+				$multisig = $coin->addmultisigaddress(2,$keys,'multisigaddress');
+				$address  = $coin->validateaddress($multisig);
+				$this->write .= $multisig.'::|::'.$address['hex']."\n";
+			}
+			else
+			{
+				$multisig = $coin->createmultisig(2,$keys);
+				$this->write .= $multisig['address'].'::|::'.$multisig['redeemScript']."\n";
+			}
 		}
 
 		else
